@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowUpRight } from "lucide-react"
 import Image from "next/image"
+import { EditableText } from "@/components/ui/editable-text"
 import { useProducts } from "@/lib/products-context"
 
 export function ProductGrid() {
@@ -14,13 +15,13 @@ export function ProductGrid() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-12 text-center md:text-left">
           <div>
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2">ЛИНЕЙКА ПРОДУКЦИИ</h2>
-            <p className="text-muted-foreground">Оборонные решения для любого уровня угроз.</p>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2"><EditableText id="prod-grid-title" defaultText="ЛИНЕЙКА ПРОДУКЦИИ" /></h2>
+            <p className="text-muted-foreground"><EditableText id="prod-grid-desc" defaultText="Оборонные решения для любого уровня угроз." /></p>
           </div>
           {/* Desktop: кнопка остается справа от заголовка */}
           <Button variant="link" className="hidden md:inline-flex text-primary mt-4 md:mt-0" asChild>
             <Link href="/catalog">
-              Полный Каталог <ArrowUpRight className="ml-2 w-4 h-4" />
+              <EditableText id="prod-grid-link-catalog" defaultText="Полный Каталог" /> <ArrowUpRight className="ml-2 w-4 h-4" />
             </Link>
           </Button>
         </div>
@@ -33,7 +34,7 @@ export function ProductGrid() {
             asChild
           >
             <Link href="/catalog">
-              Полный Каталог <ArrowUpRight className="ml-2 w-4 h-4" />
+              <EditableText id="prod-grid-link-catalog" defaultText="Полный Каталог" /> <ArrowUpRight className="ml-2 w-4 h-4" />
             </Link>
           </Button>
           {homepageProducts.map((product) => (
@@ -62,7 +63,7 @@ export function ProductGrid() {
                 </div>
                 <p className="text-sm text-muted-foreground mb-6 line-clamp-2">{product.description}</p>
                 <Button className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10">
-                  Конфигурация
+                  <EditableText id="prod-grid-btn-config" defaultText="Конфигурация" />
                 </Button>
               </div>
             </Link>

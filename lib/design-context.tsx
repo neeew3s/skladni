@@ -20,6 +20,15 @@ export interface DesignColors {
 export interface DesignSettings {
   colors: DesignColors
   borderRadius: number
+  hero: {
+    backgroundImage: string
+    opacity: number
+    fadeWidth: number
+    position: {
+      x: number
+      y: number
+    }
+  }
 }
 
 // Тип сообщения для postMessage
@@ -42,6 +51,12 @@ export const DEFAULT_DESIGN: DesignSettings = {
     ring: "#f97316",
   },
   borderRadius: 8,
+  hero: {
+    backgroundImage: "",
+    opacity: 0.5,
+    fadeWidth: 20,
+    position: { x: 50, y: 50 }
+  }
 }
 
 // Пресеты дизайна
@@ -63,6 +78,12 @@ export const DESIGN_PRESETS: Record<string, DesignSettings> = {
       ring: "#f97316",
     },
     borderRadius: 8,
+    hero: {
+      backgroundImage: "",
+      opacity: 0.5,
+      fadeWidth: 20,
+      position: { x: 50, y: 50 }
+    }
   },
   blue: {
     colors: {
@@ -80,6 +101,12 @@ export const DESIGN_PRESETS: Record<string, DesignSettings> = {
       ring: "#3b82f6",
     },
     borderRadius: 8,
+    hero: {
+      backgroundImage: "",
+      opacity: 0.5,
+      fadeWidth: 20,
+      position: { x: 50, y: 50 }
+    }
   },
   green: {
     colors: {
@@ -97,6 +124,12 @@ export const DESIGN_PRESETS: Record<string, DesignSettings> = {
       ring: "#22c55e",
     },
     borderRadius: 8,
+    hero: {
+      backgroundImage: "",
+      opacity: 0.5,
+      fadeWidth: 20,
+      position: { x: 50, y: 50 }
+    }
   },
   purple: {
     colors: {
@@ -114,6 +147,12 @@ export const DESIGN_PRESETS: Record<string, DesignSettings> = {
       ring: "#a855f7",
     },
     borderRadius: 8,
+    hero: {
+      backgroundImage: "",
+      opacity: 0.5,
+      fadeWidth: 20,
+      position: { x: 50, y: 50 }
+    }
   },
   lightBlue: {
     colors: {
@@ -131,23 +170,45 @@ export const DESIGN_PRESETS: Record<string, DesignSettings> = {
       ring: "#0ea5e9",
     },
     borderRadius: 12,
+    hero: {
+      backgroundImage: "",
+      opacity: 0.5,
+      fadeWidth: 20,
+      position: { x: 50, y: 50 }
+    }
   },
 }
 
-export interface DesignBackup {
+import { TextContent } from "./content-context"
+
+export type BackupType = 'design' | 'content'
+
+export interface BaseBackup {
   id: string
   name: string
-  settings: DesignSettings
   createdAt: string
+  type: BackupType
 }
+
+export interface DesignBackup extends BaseBackup {
+  type: 'design'
+  settings: DesignSettings
+}
+
+export interface ContentBackup extends BaseBackup {
+  type: 'content'
+  content: Record<string, TextContent>
+}
+
+export type AppBackup = DesignBackup | ContentBackup
 
 interface DesignContextType {
   settings: DesignSettings
-  backups: DesignBackup[]
+  backups: AppBackup[]
   applySettings: (settings: DesignSettings) => void
   resetToDefault: () => void
-  createBackup: (name: string) => void
-  restoreBackup: (id: string) => void
+  createBackup: (name: string, type: BackupType, data: DesignSettings | Record<string, TextContent>) => void
+  restoreBackup: (id: string) => AppBackup | undefined
   deleteBackup: (id: string) => void
 }
 
@@ -156,15 +217,11 @@ const DesignContext = createContext<DesignContextType | undefined>(undefined)
 const DESIGN_STORAGE_KEY = "security1_design"
 const BACKUPS_STORAGE_KEY = "security1_design_backups"
 
-// Применить CSS переменные к документу
-function applyDesignToDocument(settings: DesignSettings) {
-  if (typeof document === "undefined") return
-
-  const root = document.documentElement
-  const { colors, borderRadius } = settings
-
-  // Применяем к :root с важным приоритетом через inline style
-  const cssVars = `
+// Helper function to generate CSS variables string
+export function generateCssVars(settings: DesignSettings): string {
+  const { colors, borderRadius, hero } = settings
+  
+  return `
     --primary: ${colors.primary} !important;
     --primary-foreground: ${colors.primaryForeground} !important;
     --background: ${colors.background} !important;
@@ -191,7 +248,24 @@ function applyDesignToDocument(settings: DesignSettings) {
     --sidebar-accent-foreground: ${colors.accentForeground} !important;
     --sidebar-border: ${colors.border} !important;
     --sidebar-ring: ${colors.ring} !important;
+    
+    /* Hero Section Settings */
+    --hero-image: ${hero?.backgroundImage ? `url(${hero.backgroundImage})` : "none"} !important;
+    --hero-opacity: ${hero?.opacity ?? 0.5} !important;
+    --hero-fade-width: ${hero?.fadeWidth ?? 20}% !important;
+    --hero-pos-x: ${hero?.position?.x ?? 50}% !important;
+    --hero-pos-y: ${hero?.position?.y ?? 50}% !important;
   `
+}
+
+// Применить CSS переменные к документу
+function applyDesignToDocument(settings: DesignSettings) {
+  if (typeof document === "undefined") return
+
+  const root = document.documentElement
+  const { colors, borderRadius, hero } = settings
+  
+  const cssVars = generateCssVars(settings)
   
   // Удаляем старый style элемент если есть
   const existingStyle = document.getElementById("design-vars")
@@ -219,41 +293,75 @@ function applyDesignToDocument(settings: DesignSettings) {
   root.style.setProperty("--border", colors.border)
   root.style.setProperty("--ring", colors.ring)
   root.style.setProperty("--radius", `${borderRadius}px`)
+
+  // Hero section manual application
+  if (hero) {
+      root.style.setProperty("--hero-image", hero.backgroundImage ? `url(${hero.backgroundImage})` : "none")
+      root.style.setProperty("--hero-opacity", String(hero.opacity))
+      root.style.setProperty("--hero-fade-width", `${hero.fadeWidth}%`)
+      root.style.setProperty("--hero-pos-x", `${hero.position.x}%`)
+      root.style.setProperty("--hero-pos-y", `${hero.position.y}%`)
+  }
 }
 
-export function DesignProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<DesignSettings>(DEFAULT_DESIGN)
-  const [backups, setBackups] = useState<DesignBackup[]>([])
+export function DesignProvider({ children, initialSettings }: { children: ReactNode, initialSettings?: DesignSettings }) {
+  const [settings, setSettings] = useState<DesignSettings>(initialSettings || DEFAULT_DESIGN)
+  const [backups, setBackups] = useState<AppBackup[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
 
   // Загрузка настроек при монтировании
   useEffect(() => {
-    const storedSettings = localStorage.getItem(DESIGN_STORAGE_KEY)
-    const storedBackups = localStorage.getItem(BACKUPS_STORAGE_KEY)
-
-    if (storedSettings) {
-      try {
-        const parsed = JSON.parse(storedSettings)
-        setSettings(parsed)
-        applyDesignToDocument(parsed)
-      } catch (e) {
-        console.error("Failed to parse design settings:", e)
+    if (initialSettings) {
+      // If we have initial settings from server, we trust them
+      setIsInitialized(true)
+      applyDesignToDocument(initialSettings)
+    } else {
+      // Fallback to localStorage if no server settings (unlikely with new setup)
+      const storedSettings = localStorage.getItem(DESIGN_STORAGE_KEY)
+      
+      if (storedSettings) {
+        try {
+          const parsed = JSON.parse(storedSettings)
+          // Merge with defaults to ensure new keys (like hero) are present
+          const mergedSettings = {
+              ...DEFAULT_DESIGN,
+              ...parsed,
+              // Ensure deep merge for hero if it exists in parsed, otherwise keep default
+              hero: parsed.hero ? { ...DEFAULT_DESIGN.hero, ...parsed.hero } : DEFAULT_DESIGN.hero
+          }
+          setSettings(mergedSettings)
+          applyDesignToDocument(mergedSettings)
+        } catch (e) {
+          console.error("Failed to parse design settings:", e)
+          applyDesignToDocument(DEFAULT_DESIGN)
+        }
+      } else {
         applyDesignToDocument(DEFAULT_DESIGN)
       }
-    } else {
-      applyDesignToDocument(DEFAULT_DESIGN)
+      setIsInitialized(true)
     }
 
+    const storedBackups = localStorage.getItem(BACKUPS_STORAGE_KEY)
     if (storedBackups) {
       try {
-        setBackups(JSON.parse(storedBackups))
+        const parsed = JSON.parse(storedBackups)
+        // Migration for old backups that didn't have type
+        const migrated = parsed.map((b: any) => {
+          if (!b.type) {
+            return {
+              ...b,
+              type: 'design',
+              settings: b.settings || DEFAULT_DESIGN // Fallback
+            }
+          }
+          return b
+        })
+        setBackups(migrated)
       } catch (e) {
         console.error("Failed to parse design backups:", e)
       }
     }
-
-    setIsInitialized(true)
-  }, [])
+  }, [initialSettings])
 
   // Слушатель postMessage для превью в iframe
   useEffect(() => {
@@ -272,6 +380,13 @@ export function DesignProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isInitialized) {
       localStorage.setItem(DESIGN_STORAGE_KEY, JSON.stringify(settings))
+      
+      // Save to server
+      fetch('/api/design', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      }).catch(err => console.error("Failed to save design to server:", err))
     }
   }, [settings, isInitialized])
 
@@ -292,22 +407,37 @@ export function DesignProvider({ children }: { children: ReactNode }) {
     applyDesignToDocument(DEFAULT_DESIGN)
   }
 
-  const createBackup = (name: string) => {
-    const backup: DesignBackup = {
-      id: Date.now().toString(),
-      name,
-      settings: { ...settings },
-      createdAt: new Date().toISOString(),
+  const createBackup = (name: string, type: BackupType, data: DesignSettings | Record<string, TextContent>) => {
+    let backup: AppBackup
+    
+    if (type === 'design') {
+        backup = {
+            id: Date.now().toString(),
+            type: 'design',
+            name,
+            settings: data as DesignSettings,
+            createdAt: new Date().toISOString()
+        }
+    } else {
+        backup = {
+            id: Date.now().toString(),
+            type: 'content',
+            name,
+            content: data as Record<string, TextContent>,
+            createdAt: new Date().toISOString()
+        }
     }
-    setBackups((prev) => [backup, ...prev].slice(0, 5)) // Максимум 5 бэкапов
+
+    setBackups((prev) => [backup, ...prev].slice(0, 10)) // Максимум 10 бэкапов (общий лимит)
   }
 
   const restoreBackup = (id: string) => {
     const backup = backups.find((b) => b.id === id)
-    if (backup) {
+    if (backup && backup.type === 'design') {
       setSettings(backup.settings)
       applyDesignToDocument(backup.settings)
     }
+    return backup
   }
 
   const deleteBackup = (id: string) => {

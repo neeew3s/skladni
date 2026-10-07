@@ -8,9 +8,10 @@ import { Layers, Box, Scan, Info, Lock, Unlock } from "lucide-react"
 
 interface Product3DViewerProps {
   productSlug: string
+  isMobile?: boolean
 }
 
-export function Product3DViewer({ productSlug }: Product3DViewerProps) {
+export function Product3DViewer({ productSlug, isMobile = false }: Product3DViewerProps) {
   const [mode, setMode] = useState<"standard" | "exploded" | "section">("standard")
   const [shutterVariant, setShutterVariant] = useState<"bifold" | "accordion">("bifold")
   const [isOpen, setIsOpen] = useState(false)
@@ -258,7 +259,7 @@ export function Product3DViewer({ productSlug }: Product3DViewerProps) {
           showAnnotations={showAnnotations}
           hoveredPart={hoveredPart}
           specs={allSpecs}
-          isMobile={false}
+          isMobile={isMobile}
         />
 
         {/* Corner Decorations */}

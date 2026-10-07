@@ -1,0 +1,131 @@
+{
+  "nav-brand": {
+    "text": "СКЛАДНИ"
+  },
+  "nav-link-products": {
+    "text": "ПРОДУКЦИЯ"
+  },
+  "nav-link-engineering": {
+    "text": "ИНЖЕНЕРИЯ"
+  },
+  "nav-link-specs": {
+    "text": "ХАРАКТЕРИСТИКИ"
+  },
+  "nav-cart": {
+    "text": "Корзина"
+  },
+  "hero-badge": {
+    "text": "ЗАЩИТА ВОЕННОГО КЛАССА"
+  },
+  "hero-title-1": {
+    "text": "ЗАЩИТИТЕ СВОЕ",
+    "style": {
+      "color": "#dedede"
+    }
+  },
+  "hero-title-2": {
+    "text": "имущество"
+  },
+  "hero-description": {
+    "text": "Передовые бронированные ставни, модульные контейнеры и жилые бункеры, разработанные для современных угроз."
+  },
+  "hero-btn-config": {
+    "text": "Конфигуратор"
+  },
+  "hero-btn-catalog": {
+    "text": "Каталог"
+  },
+  "feature-1-title": {
+    "text": "Баллистическая защита"
+  },
+  "feature-1-desc": {
+    "text": "Сертифицировано по стандартам защиты NIJ Level IV."
+  },
+  "feature-2-title": {
+    "text": "ЭМИ Экранирование"
+  },
+  "feature-2-desc": {
+    "text": "Интеграция клетки Фарадея для защиты электроники."
+  },
+  "feature-3-title": {
+    "text": "Биометрический доступ"
+  },
+  "feature-3-desc": {
+    "text": "Передовые системы входа со сканированием сетчатки."
+  },
+  "eng-title-1": {
+    "text": "ИНЖЕНЕРНАЯ"
+  },
+  "eng-title-2": {
+    "text": "СХЕМА"
+  },
+  "eng-desc": {
+    "text": "Изучите многоуровневую систему защиты. Выберите модель и взаимодействуйте с механизмами."
+  },
+  "eng-btn-bunker": {
+    "text": "Бункер"
+  },
+  "eng-btn-container": {
+    "text": "Контейнер"
+  },
+  "eng-btn-shutters": {
+    "text": "Ставни"
+  },
+  "eng-mode-label": {
+    "text": "Режим просмотра"
+  },
+  "eng-status-label": {
+    "text": "Состояние"
+  },
+  "eng-status-closed": {
+    "text": "ЗАКРЫТО"
+  },
+  "eng-labels-toggle": {
+    "text": "Метки деталей"
+  },
+  "eng-labels-desc": {
+    "text": "Показать информацию при наведении"
+  },
+  "prod-grid-title": {
+    "text": "ЛИНЕЙКА ПРОДУКЦИИ"
+  },
+  "prod-grid-desc": {
+    "text": "Оборонные решения для любого уровня угроз."
+  },
+  "prod-grid-link-catalog": {
+    "text": "Полный Каталог"
+  },
+  "prod-grid-btn-config": {
+    "text": "Конфигурация"
+  },
+  "home-specs-title": {
+    "text": "ГОТОВЫ К УКРЕПЛЕНИЮ?"
+  },
+  "home-specs-desc": {
+    "text": "Проконсультируйтесь с нашими инженерами по безопасности для разработки индивидуального решения защиты, адаптированного к вашим конкретным требованиям."
+  },
+  "home-specs-btn-consult": {
+    "text": "ЗАПИСАТЬСЯ НА КОНСУЛЬТАЦИЮ"
+  },
+  "home-specs-btn-download": {
+    "text": "СКАЧАТЬ СПЕЦИФИКАЦИИ"
+  },
+  "footer-copyright": {
+    "text": "© 2025 FORTRESS. Все права защищены."
+  },
+  "footer-developed-by": {
+    "text": "Developed by"
+  },
+  "mobile-home-cta-title": {
+    "text": "ГОТОВЫ К УКРЕПЛЕНИЮ?"
+  },
+  "mobile-home-cta-desc": {
+    "text": "Проконсультируйтесь с нашими инженерами по безопасности для разработки индивидуального решения защиты."
+  },
+  "mobile-home-cta-btn-consult": {
+    "text": "ЗАПИСАТЬСЯ НА КОНСУЛЬТАЦИЮ"
+  },
+  "mobile-home-cta-btn-specs": {
+    "text": "СКАЧАТЬ СПЕЦИФИКАЦИИ"
+  }
+}

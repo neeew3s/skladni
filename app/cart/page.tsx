@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { EditableText } from "@/components/ui/editable-text"
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart, totalItems } = useCart()
@@ -29,7 +30,7 @@ export default function CartPage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <h1 className="font-heading text-3xl md:text-4xl font-bold text-white">КОРЗИНА</h1>
+          <h1 className="font-heading text-3xl md:text-4xl font-bold text-white"><EditableText id="cart-title" defaultText="КОРЗИНА" /></h1>
           {totalItems > 0 && (
             <span className="text-muted-foreground">
               ({totalItems} {totalItems === 1 ? "товар" : totalItems < 5 ? "товара" : "товаров"})
@@ -42,13 +43,13 @@ export default function CartPage() {
             <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
               <ShoppingBag className="h-12 w-12 text-muted-foreground" />
             </div>
-            <h2 className="text-xl font-semibold text-white mb-2">Корзина пуста</h2>
+            <h2 className="text-xl font-semibold text-white mb-2"><EditableText id="cart-empty-title" defaultText="Корзина пуста" /></h2>
             <p className="text-muted-foreground mb-8 max-w-md">
-              Добавьте товары из нашего каталога, чтобы оформить заказ
+              <EditableText id="cart-empty-desc" defaultText="Добавьте товары из нашего каталога, чтобы оформить заказ" />
             </p>
             <Link href="/#products">
               <Button variant="industrial" size="lg">
-                Перейти к продукции
+                <EditableText id="cart-btn-catalog" defaultText="Перейти к продукции" />
               </Button>
             </Link>
           </div>
@@ -101,38 +102,38 @@ export default function CartPage() {
 
               <Button variant="ghost" className="text-muted-foreground hover:text-red-500" onClick={clearCart}>
                 <Trash2 className="h-4 w-4 mr-2" />
-                Очистить корзину
+                <EditableText id="cart-btn-clear" defaultText="Очистить корзину" />
               </Button>
             </div>
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
               <div className="bg-white/5 border border-white/10 rounded-lg p-6 sticky top-28">
-                <h2 className="font-heading text-xl font-bold text-white mb-6">Итого</h2>
+                <h2 className="font-heading text-xl font-bold text-white mb-6"><EditableText id="cart-summary-title" defaultText="Итого" /></h2>
 
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Товары ({totalItems})</span>
+                    <span><EditableText id="cart-summary-items" defaultText="Товары" /> ({totalItems})</span>
                     <span>{formatPrice(totalPrice)}</span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Доставка</span>
-                    <span>Рассчитывается</span>
+                    <span><EditableText id="cart-summary-delivery" defaultText="Доставка" /></span>
+                    <span><EditableText id="cart-summary-delivery-calc" defaultText="Рассчитывается" /></span>
                   </div>
                   <div className="border-t border-white/10 pt-4">
                     <div className="flex justify-between text-white font-bold text-xl">
-                      <span>К оплате</span>
+                      <span><EditableText id="cart-summary-total" defaultText="К оплате" /></span>
                       <span className="text-primary">{formatPrice(totalPrice)}</span>
                     </div>
                   </div>
                 </div>
 
                 <Button variant="industrial" className="w-full py-6 text-lg mb-4">
-                  Оформить заказ
+                  <EditableText id="cart-btn-checkout" defaultText="Оформить заказ" />
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  Нажимая кнопку, вы соглашаетесь с условиями оферты
+                  <EditableText id="cart-terms" defaultText="Нажимая кнопку, вы соглашаетесь с условиями оферты" />
                 </p>
               </div>
             </div>

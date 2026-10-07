@@ -6,8 +6,10 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ArrowRight, Download, ShoppingCart, Filter, Grid, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { EditableText } from "@/components/ui/editable-text"
 import { useProducts } from "@/lib/products-context"
 import { useCart } from "@/lib/cart-context"
+import { useConsultations } from "@/lib/consultations-context"
 
 type ViewMode = "grid" | "list"
 type CategoryFilter = "all" | "Жилой" | "Модульный" | "Бункер"
@@ -18,6 +20,7 @@ export default function CatalogPage() {
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
   const { addToCart } = useCart()
   const { products } = useProducts()
+  const { openConsultation } = useConsultations()
 
   const filteredProducts = categoryFilter === "all" ? products : products.filter((p) => p.category === categoryFilter)
 
@@ -69,8 +72,8 @@ export default function CatalogPage() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground">ПОЛНЫЙ КАТАЛОГ</h1>
-                <p className="text-muted-foreground text-sm mt-1">{filteredProducts.length} товаров в каталоге</p>
+                <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground"><EditableText id="catalog-title" defaultText="ПОЛНЫЙ КАТАЛОГ" /></h1>
+                <p className="text-muted-foreground text-sm mt-1">{filteredProducts.length} <EditableText id="catalog-count-label" defaultText="товаров в каталоге" /></p>
               </div>
             </div>
 
@@ -119,7 +122,7 @@ export default function CatalogPage() {
                     : "border-border text-foreground hover:bg-muted"
                 }
               >
-                {categoryLabels[category]}
+                <EditableText id={`catalog-filter-${category}`} defaultText={categoryLabels[category]} />
               </Button>
             ))}
           </div>
@@ -131,7 +134,7 @@ export default function CatalogPage() {
         <AnimatePresence mode="wait">
           {viewMode === "grid" ? (
             <motion.div
-              key="grid"
+              key={`grid-${categoryFilter}`}
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -204,7 +207,7 @@ export default function CatalogPage() {
                         onClick={() => addToCart(product)}
                         className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />В корзину
+                        <ShoppingCart className="w-4 h-4 mr-2" /><EditableText id="catalog-btn-cart" defaultText="В корзину" />
                       </Button>
                       <Button
                         variant="outline"
@@ -223,7 +226,7 @@ export default function CatalogPage() {
             </motion.div>
           ) : (
             <motion.div
-              key="list"
+              key={`list-${categoryFilter}`}
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -291,7 +294,7 @@ export default function CatalogPage() {
                           onClick={() => addToCart(product)}
                           className="bg-primary hover:bg-primary/90 text-primary-foreground"
                         >
-                          <ShoppingCart className="w-4 h-4 mr-2" />В корзину
+                          <ShoppingCart className="w-4 h-4 mr-2" /><EditableText id="catalog-btn-cart" defaultText="В корзину" />
                         </Button>
                         <Button
                           variant="outline"
@@ -300,12 +303,12 @@ export default function CatalogPage() {
                         >
                           <a href={product.specificationFile} download>
                             <Download className="w-4 h-4 mr-2" />
-                            Спецификация
+                            <EditableText id="catalog-btn-specs" defaultText="Спецификация" />
                           </a>
                         </Button>
                         <Button variant="ghost" asChild className="text-foreground hover:text-primary">
                           <Link href={`/products/${product.slug}`}>
-                            Подробнее
+                            <EditableText id="catalog-btn-more" defaultText="Подробнее" />
                             <ArrowRight className="w-4 h-4 ml-2" />
                           </Link>
                         </Button>
@@ -329,13 +332,13 @@ export default function CatalogPage() {
       >
         <div className="container mx-auto px-4 py-16 text-center">
           <h2 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-4">
-            НЕ НАШЛИ ПОДХОДЯЩЕЕ РЕШЕНИЕ?
+            <EditableText id="catalog-cta-title" defaultText="НЕ НАШЛИ ПОДХОДЯЩЕЕ РЕШЕНИЕ?" />
           </h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Наши специалисты разработают индивидуальное решение под ваши требования безопасности.
+            <EditableText id="catalog-cta-desc" defaultText="Наши специалисты разработают индивидуальное решение под ваши требования безопасности." />
           </p>
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-            Связаться с нами
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={openConsultation}>
+            <EditableText id="catalog-cta-btn" defaultText="Связаться с нами" />
           </Button>
         </div>
       </motion.section>

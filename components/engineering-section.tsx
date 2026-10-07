@@ -4,6 +4,7 @@ import { useState } from "react"
 import { SceneViewer } from "@/components/3d/scene-viewer"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { EditableText } from "@/components/ui/editable-text"
 import { Layers, Box, Scan, Info, Lock, Unlock, Package, Shield, Blinds } from "lucide-react"
 
 export function EngineeringSection({ isMobile = false }: { isMobile?: boolean }) {
@@ -132,10 +133,10 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
         {/* Header Section */}
         <div className="lg:col-span-4 pointer-events-auto">
           <h2 className="text-3xl md:text-5xl font-heading font-bold text-white mb-2">
-            ИНЖЕНЕРНАЯ <span className="text-primary">СХЕМА</span>
+            <EditableText id="eng-title-1" defaultText="ИНЖЕНЕРНАЯ" /> <span className="text-primary"><EditableText id="eng-title-2" defaultText="СХЕМА" /></span>
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md">
-            Изучите многоуровневую систему защиты. Выберите модель и взаимодействуйте с механизмами.
+            <EditableText id="eng-desc" defaultText="Изучите многоуровневую систему защиты. Выберите модель и взаимодействуйте с механизмами." />
           </p>
         </div>
 
@@ -146,28 +147,28 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
             onClick={() => setActiveModel("bunker")}
             className="flex-1 min-w-[100px] text-xs md:text-sm px-2 md:px-4"
           >
-            <Shield className="w-4 h-4 mr-1 md:mr-2 shrink-0" /> <span className="truncate">Бункер</span>
+            <Shield className="w-4 h-4 mr-1 md:mr-2 shrink-0" /> <span className="truncate"><EditableText id="eng-btn-bunker" defaultText="Бункер" /></span>
           </Button>
           <Button
             variant={activeModel === "container" ? "default" : "ghost"}
             onClick={() => setActiveModel("container")}
             className="flex-1 min-w-[100px] text-xs md:text-sm px-2 md:px-4"
           >
-            <Package className="w-4 h-4 mr-1 md:mr-2 shrink-0" /> <span className="truncate">Контейнер</span>
+            <Package className="w-4 h-4 mr-1 md:mr-2 shrink-0" /> <span className="truncate"><EditableText id="eng-btn-container" defaultText="Контейнер" /></span>
           </Button>
           <Button
             variant={activeModel === "shutters" ? "default" : "ghost"}
             onClick={() => setActiveModel("shutters")}
             className="flex-1 min-w-[100px] text-xs md:text-sm px-2 md:px-4"
           >
-            <Blinds className="w-4 h-4 mr-1 md:mr-2 shrink-0" /> <span className="truncate">Ставни</span>
+            <Blinds className="w-4 h-4 mr-1 md:mr-2 shrink-0" /> <span className="truncate"><EditableText id="eng-btn-shutters" defaultText="Ставни" /></span>
           </Button>
         </div>
 
         {/* Variant Selection (Conditional) */}
         {activeModel === "shutters" ? (
           <div className="lg:col-span-4 flex gap-2 mb-6 p-1 h-fit">
-            <span className="text-xs text-muted-foreground self-center mr-2">Тип:</span>
+            <span className="text-xs text-muted-foreground self-center mr-2"><EditableText id="eng-variant-label" defaultText="Тип:" /></span>
             <div className="flex bg-secondary/20 rounded-md p-1 w-full md:w-auto">
               <Button
                 size="sm"
@@ -175,7 +176,7 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
                 onClick={() => setShutterVariant("bifold")}
                 className="text-xs h-7 whitespace-nowrap flex-1 md:flex-none"
               >
-                Складные
+                <EditableText id="eng-btn-fold" defaultText="Складные" />
               </Button>
               <Button
                 size="sm"
@@ -183,7 +184,7 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
                 onClick={() => setShutterVariant("accordion")}
                 className="text-xs h-7 whitespace-nowrap flex-1 md:flex-none"
               >
-                Гармошка
+                <EditableText id="eng-btn-accordion" defaultText="Гармошка" />
               </Button>
             </div>
           </div>
@@ -194,7 +195,7 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
         {/* Controls Section */}
         <div className="lg:col-span-4 grid grid-cols-2 gap-4 mb-4 md:mb-12 h-fit">
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">Режим просмотра</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider"><EditableText id="eng-mode-label" defaultText="Режим просмотра" /></span>
             <div className="flex gap-1">
               <Button
                 size="sm"
@@ -224,7 +225,7 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
           </div>
 
           <div className="flex flex-col gap-2">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">Состояние</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider"><EditableText id="eng-status-label" defaultText="Состояние" /></span>
             <div className="flex gap-1">
               <Button
                 variant={isOpen ? "destructive" : "secondary"}
@@ -233,11 +234,11 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
               >
                 {isOpen ? (
                   <>
-                    <Unlock className="w-4 h-4 mr-2" /> ОТКРЫТО
+                    <Unlock className="w-4 h-4 mr-2" /> <EditableText id="eng-status-open" defaultText="ОТКРЫТО" />
                   </>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4 mr-2" /> ЗАКРЫТО
+                    <Lock className="w-4 h-4 mr-2" /> <EditableText id="eng-status-closed" defaultText="ЗАКРЫТО" />
                   </>
                 )}
               </Button>
@@ -293,9 +294,9 @@ export function EngineeringSection({ isMobile = false }: { isMobile?: boolean })
           <div className="flex flex-col">
             <span className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
               <Info className="w-4 h-4 text-primary" />
-              Метки деталей
+              <EditableText id="eng-labels-toggle" defaultText="Метки деталей" />
             </span>
-            <span className="text-[10px] text-muted-foreground">Показать информацию при наведении</span>
+            <span className="text-[10px] text-muted-foreground"><EditableText id="eng-labels-desc" defaultText="Показать информацию при наведении" /></span>
           </div>
           <Switch checked={showAnnotations} onCheckedChange={setShowAnnotations} />
         </div>

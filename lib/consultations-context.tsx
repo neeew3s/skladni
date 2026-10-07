@@ -14,6 +14,10 @@ export interface Consultation {
 interface ConsultationsContextType {
   consultations: Consultation[]
   addConsultation: (data: Omit<Consultation, "id" | "createdAt">) => void
+  deleteConsultation: (id: number) => void
+  isConsultationOpen: boolean
+  openConsultation: () => void
+  closeConsultation: () => void
 }
 
 const ConsultationsContext = createContext<ConsultationsContextType | undefined>(undefined)
@@ -23,6 +27,7 @@ const STORAGE_KEY = "security1_consultations"
 export function ConsultationsProvider({ children }: { children: ReactNode }) {
   const [consultations, setConsultations] = useState<Consultation[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
+  const [isConsultationOpen, setIsConsultationOpen] = useState(false)
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null
@@ -55,8 +60,24 @@ export function ConsultationsProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  const deleteConsultation = (id: number) => {
+    setConsultations((prev) => prev.filter((c) => c.id !== id))
+  }
+
+  const openConsultation = () => setIsConsultationOpen(true)
+  const closeConsultation = () => setIsConsultationOpen(false)
+
   return (
-    <ConsultationsContext.Provider value={{ consultations, addConsultation }}>
+    <ConsultationsContext.Provider 
+      value={{ 
+        consultations, 
+        addConsultation, 
+        deleteConsultation,
+        isConsultationOpen,
+        openConsultation,
+        closeConsultation
+      }}
+    >
       {children}
     </ConsultationsContext.Provider>
   )

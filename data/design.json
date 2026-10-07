@@ -1,0 +1,26 @@
+{
+  "colors": {
+    "primary": "#f97316",
+    "primaryForeground": "#ffffff",
+    "background": "#161412",
+    "foreground": "#fafafa",
+    "card": "#171717",
+    "cardForeground": "#fafafa",
+    "muted": "#262626",
+    "mutedForeground": "#a3a3a3",
+    "accent": "#f97316",
+    "accentForeground": "#ffffff",
+    "border": "#262626",
+    "ring": "#f97316"
+  },
+  "borderRadius": 8,
+  "hero": {
+    "backgroundImage": "/uploads/images/1764433511290-f1762e-____________2025-11-29_192511258.png",
+    "opacity": 0.2,
+    "fadeWidth": 20,
+    "position": {
+      "x": 50,
+      "y": 50
+    }
+  }
+}

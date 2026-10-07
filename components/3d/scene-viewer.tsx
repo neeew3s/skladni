@@ -78,12 +78,15 @@ export function SceneViewer({
   return (
     <div className="w-full h-full min-h-[400px] bg-gradient-to-b from-[#1a1a1a] to-[#000000] relative group">
       {showOverlay && (
-        <div
-          className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 hover:bg-black/10 transition-colors cursor-pointer"
-          onClick={() => setIsInteracting(true)}
-          onTouchEnd={() => setIsInteracting(true)}
-        >
-          <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 text-white/80 text-sm">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 transition-colors touch-pan-y">
+          <div
+            className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 text-white/80 text-sm cursor-pointer hover:bg-black/80 transition-colors"
+            onClick={() => setIsInteracting(true)}
+            onTouchEnd={(e) => {
+              e.preventDefault() // Prevent ghost clicks
+              setIsInteracting(true)
+            }}
+          >
             <Hand className="w-4 h-4 animate-pulse" />
             <span>Нажмите для управления 3D</span>
           </div>
@@ -102,7 +105,7 @@ export function SceneViewer({
         </button>
       )}
 
-      <Canvas shadows dpr={[1, 2]}>
+      <Canvas shadows dpr={[1, 2]} className={showOverlay ? "pointer-events-none" : ""}>
         <PerspectiveCamera makeDefault position={[-4, 3, 8]} fov={45} />
         <Suspense fallback={null}>
           {/* Bright lighting setup to simulate HDR environment */}

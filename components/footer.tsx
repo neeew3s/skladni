@@ -1,16 +1,17 @@
 import Link from "next/link"
 import { X } from "lucide-react"
+import { EditableText } from "@/components/ui/editable-text"
 
 export function Footer() {
   return (
     <footer className="w-full py-6 bg-[#0a0a0a] border-t border-white/10">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground">© 2025 FORTRESS. Все права защищены.</p>
+        <p className="text-sm text-muted-foreground"><EditableText id="footer-copyright" defaultText="© 2025 FORTRESS. Все права защищены." /></p>
 
         <div className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
-          <span>Developed by</span>
+          <span><EditableText id="footer-developed-by" defaultText="Developed by" /></span>
           <Link
-            href="https://github.com/volk307791-dev"
+            href="https://github.com/neeew3s"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary font-bold hover:underline transition-colors"

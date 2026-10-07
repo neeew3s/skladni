@@ -59,7 +59,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { FileUpload } from "@/components/file-upload"
 import { DesignEditor } from "@/components/design-editor"
-import { useDesign } from "@/lib/design-context"
+import { useDesign, DesignBackup, ContentBackup } from "@/lib/design-context"
 import { useConsultations } from "@/lib/consultations-context"
 import { 
   useProducts, 
@@ -73,6 +73,8 @@ import {
   formatPrice,
   formatNumber
 } from "@/lib/products-context"
+
+import { TextContent, useContent } from "@/lib/content-context"
 
 // Учетные данные
 const ADMIN_LOGIN = "admin_security"
@@ -138,7 +140,7 @@ export default function AdminPage() {
     setHomepageProducts 
   } = useProducts()
 
-  const { consultations } = useConsultations()
+  const { consultations, deleteConsultation } = useConsultations()
 
   const { 
     settings: designSettings, 
@@ -148,6 +150,8 @@ export default function AdminPage() {
     restoreBackup: restoreDesignBackup,
     deleteBackup: deleteDesignBackup
   } = useDesign()
+  
+  const { restoreContent } = useContent()
 
   // Состояния для диалогов
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
@@ -696,6 +700,17 @@ export default function AdminPage() {
                             {item.intent}
                           </p>
                         </div>
+                        <div className="mt-2 flex justify-end border-t border-zinc-800 pt-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => deleteConsultation(item.id)}
+                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Закрыть заявку
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -757,78 +772,136 @@ export default function AdminPage() {
                   </div>
 
                   {/* Резервные копии */}
-                  {designBackups.length > 0 && (
-                    <div className="p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/50">
-                      <div className="flex items-center justify-between mb-3">
-                        <p className="text-sm font-medium">Резервные копии ({designBackups.length}/5)</p>
-                      </div>
-                      <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                        {designBackups.map((backup) => (
-                          <div key={backup.id} className="p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50 hover:border-zinc-600 transition-colors">
-                            <div className="flex items-center justify-between mb-2">
-                              <div>
-                                <p className="text-sm font-medium">{backup.name}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {new Date(backup.createdAt).toLocaleString("ru-RU")}
-                                </p>
-                              </div>
-                              <div className="flex gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => restoreDesignBackup(backup.id)}
-                                  className="text-primary hover:text-primary/80 hover:bg-primary/10"
-                                >
-                                  Восстановить
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => deleteDesignBackup(backup.id)}
-                                  className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                            {/* Превью цветовой гаммы */}
-                            <div className="flex gap-1">
-                              <div 
-                                className="w-6 h-6 rounded border border-zinc-600" 
-                                style={{ backgroundColor: backup.settings.colors.primary }}
-                                title="Основной цвет"
-                              />
-                              <div 
-                                className="w-6 h-6 rounded border border-zinc-600" 
-                                style={{ backgroundColor: backup.settings.colors.background }}
-                                title="Фон"
-                              />
-                              <div 
-                                className="w-6 h-6 rounded border border-zinc-600" 
-                                style={{ backgroundColor: backup.settings.colors.foreground }}
-                                title="Текст"
-                              />
-                              <div 
-                                className="w-6 h-6 rounded border border-zinc-600" 
-                                style={{ backgroundColor: backup.settings.colors.accent }}
-                                title="Акцент"
-                              />
-                              <div 
-                                className="w-6 h-6 rounded border border-zinc-600" 
-                                style={{ backgroundColor: backup.settings.colors.card }}
-                                title="Карточки"
-                              />
-                              <div 
-                                className="w-6 h-6 rounded border border-zinc-600" 
-                                style={{ backgroundColor: backup.settings.colors.muted }}
-                                title="Приглушённый фон"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                  <div className="p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/50">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium">Резервные копии ({designBackups.length}/10)</p>
                     </div>
-                  )}
+                    
+                    <Tabs defaultValue="design" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 mb-4 bg-zinc-800">
+                        <TabsTrigger value="design">Дизайн</TabsTrigger>
+                        <TabsTrigger value="content">Текст</TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="design" className="space-y-2">
+                        {designBackups.filter(b => b.type === 'design').length === 0 ? (
+                           <div className="text-center py-4 text-muted-foreground text-sm">
+                             <p>Резервных копий дизайна нет</p>
+                           </div>
+                        ) : (
+                          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                            {designBackups.filter(b => b.type === 'design').map((backup) => (
+                              <div key={backup.id} className="p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50 hover:border-zinc-600 transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div>
+                                    <p className="text-sm font-medium">{backup.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {new Date(backup.createdAt).toLocaleString("ru-RU")}
+                                    </p>
+                                  </div>
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => restoreDesignBackup(backup.id)}
+                                      className="text-primary hover:text-primary/80 hover:bg-primary/10"
+                                    >
+                                      Восстановить
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => deleteDesignBackup(backup.id)}
+                                      className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                {/* Превью цветовой гаммы */}
+                                <div className="flex gap-1">
+                                  <div 
+                                    className="w-6 h-6 rounded border border-zinc-600" 
+                                    style={{ backgroundColor: (backup as DesignBackup).settings.colors.primary }}
+                                    title="Основной цвет"
+                                  />
+                                  <div 
+                                    className="w-6 h-6 rounded border border-zinc-600" 
+                                    style={{ backgroundColor: (backup as DesignBackup).settings.colors.background }}
+                                    title="Фон"
+                                  />
+                                  <div 
+                                    className="w-6 h-6 rounded border border-zinc-600" 
+                                    style={{ backgroundColor: (backup as DesignBackup).settings.colors.foreground }}
+                                    title="Текст"
+                                  />
+                                  <div 
+                                    className="w-6 h-6 rounded border border-zinc-600" 
+                                    style={{ backgroundColor: (backup as DesignBackup).settings.colors.accent }}
+                                    title="Акцент"
+                                  />
+                                  <div 
+                                    className="w-6 h-6 rounded border border-zinc-600" 
+                                    style={{ backgroundColor: (backup as DesignBackup).settings.colors.card }}
+                                    title="Карточки"
+                                  />
+                                  <div 
+                                    className="w-6 h-6 rounded border border-zinc-600" 
+                                    style={{ backgroundColor: (backup as DesignBackup).settings.colors.muted }}
+                                    title="Приглушённый фон"
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </TabsContent>
+                      
+                      <TabsContent value="content" className="space-y-2">
+                        {designBackups.filter(b => b.type === 'content').length === 0 ? (
+                           <div className="text-center py-4 text-muted-foreground text-sm">
+                             <p>Резервных копий текста нет</p>
+                           </div>
+                        ) : (
+                          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                            {designBackups.filter(b => b.type === 'content').map((backup) => (
+                              <div key={backup.id} className="p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50 hover:border-zinc-600 transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex-1 mr-4">
+                                    <p className="text-sm font-medium line-clamp-2" title={backup.name}>{backup.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {new Date(backup.createdAt).toLocaleString("ru-RU")}
+                                    </p>
+                                  </div>
+                                  <div className="flex gap-1 shrink-0">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const b = backup as ContentBackup
+                                        restoreContent(b.content)
+                                      }}
+                                      className="text-primary hover:text-primary/80 hover:bg-primary/10"
+                                    >
+                                      Восстановить
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => deleteDesignBackup(backup.id)}
+                                      className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </TabsContent>
+                    </Tabs>
+                  </div>
 
                   <Button 
                     onClick={() => setIsDesignEditorOpen(true)}
@@ -850,16 +923,32 @@ export default function AdminPage() {
           <DesignEditor
             initialSettings={designSettings}
             backups={designBackups}
-            onApply={(newSettings, shouldCreateBackup, backupName) => {
+            onApply={(newSettings, shouldCreateBackup, backupName, content, backupType, previousSettings, previousContent) => {
               // Сначала закрываем редактор
               setIsDesignEditorOpen(false)
               
               // Затем применяем настройки с небольшой задержкой
               setTimeout(() => {
                 if (shouldCreateBackup && backupName) {
-                  createDesignBackup(backupName)
+                  // Определяем, что сохранять в бэкап: предыдущее состояние (если есть) или текущее/новое
+                  let dataToBackup;
+                  
+                  if (backupType === 'content') {
+                      // Для текста приоритет: previousContent -> content -> empty
+                      dataToBackup = previousContent || content || {}
+                  } else {
+                      // Для дизайна приоритет: previousSettings -> newSettings
+                      dataToBackup = previousSettings || newSettings
+                  }
+
+                  createDesignBackup(backupName, backupType || 'design', dataToBackup)
                 }
-                applyDesignSettings(newSettings)
+                
+                // Применяем новые настройки дизайна (текст применяется через iframe внутри редактора)
+                // Only apply design settings if it's a design backup or no backup type (mixed)
+                if (backupType === 'design' || !backupType) {
+                    applyDesignSettings(newSettings)
+                }
               }, 50)
             }}
             onCancel={() => setIsDesignEditorOpen(false)}
